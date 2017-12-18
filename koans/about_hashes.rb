@@ -3,91 +3,118 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 class AboutHashes < Neo::Koan
   def test_creating_hashes
     empty_hash = Hash.new
-    assert_equal __, empty_hash.class
-    assert_equal(__, empty_hash)
-    assert_equal __, empty_hash.size
+    assert_equal Hash, empty_hash.class
+    assert_equal({}, empty_hash)
+    assert_equal 0, empty_hash.size
   end
 
   def test_hash_literals
     hash = { :one => "uno", :two => "dos" }
-    assert_equal __, hash.size
+    assert_equal 2, hash.size
   end
 
   def test_accessing_hashes
     hash = { :one => "uno", :two => "dos" }
-    assert_equal __, hash[:one]
-    assert_equal __, hash[:two]
-    assert_equal __, hash[:doesnt_exist]
+    assert_equal "uno", hash[:one]
+    assert_equal "dos", hash[:two]
+    assert_equal nil, hash[:doesnt_exist]
   end
 
   def test_accessing_hashes_with_fetch
     hash = { :one => "uno" }
-    assert_equal __, hash.fetch(:one)
-    assert_raise(___) do
+    assert_equal "uno", hash.fetch(:one)
+    assert_raise(KeyError) do
       hash.fetch(:doesnt_exist)
     end
+  end
 
     # THINK ABOUT IT:
     #
     # Why might you want to use #fetch instead of #[] when accessing hash keys?
+    # 
+    # 1. Fetch throws an error if the key doesn't exist
+    # 2. Or you can supply a default value if the key doesn't exist
+    #       which is useful if the returned value may legitimately be nil or false
+    # 3. Or you can supply a block to run if the key doesn't exist
+    # See https://stackoverflow.com/questions/16569409/fetch-vs-when-working-with-hashes
+  def test_more_hash_features
+    hash = { :one => "uno" }
+
+    assert_nothing_raised do
+      foo = hash[:doesnt_exist]
+    end
+
+    assert_nothing_raised do
+      assert_equal "default", hash.fetch(:doesnt_exist, "default")
+    end
+
+    assert_nothing_raised do
+      assert_equal "default", hash.fetch(:doesnt_exist) { |key|
+          "default"
+      }
+    end
   end
 
   def test_changing_hashes
     hash = { :one => "uno", :two => "dos" }
     hash[:one] = "eins"
 
-    expected = { :one => __, :two => "dos" }
-    assert_equal __, hash
+    expected = { :one => "eins", :two => "dos" }
+    assert_equal expected, hash
 
     # Bonus Question: Why was "expected" broken out into a variable
     # rather than used as a literal?
+    #
+    # ...because ruby treats the first parameter to assert_equal as a block
+    # See https://stackoverflow.com/questions/7533711/what-is-the-answer-to-the-bonus-question-in-test-changing-hashes-of-ruby-koans
   end
 
   def test_hash_is_unordered
     hash1 = { :one => "uno", :two => "dos" }
     hash2 = { :two => "dos", :one => "uno" }
 
-    assert_equal __, hash1 == hash2
+    assert_equal true, hash1 == hash2
   end
 
   def test_hash_keys
     hash = { :one => "uno", :two => "dos" }
-    assert_equal __, hash.keys.size
-    assert_equal __, hash.keys.include?(:one)
-    assert_equal __, hash.keys.include?(:two)
-    assert_equal __, hash.keys.class
+    assert_equal 2, hash.keys.size
+    assert_equal true, hash.keys.include?(:one)
+    assert_equal true, hash.keys.include?(:two)
+    assert_equal Array, hash.keys.class
   end
 
   def test_hash_values
     hash = { :one => "uno", :two => "dos" }
-    assert_equal __, hash.values.size
-    assert_equal __, hash.values.include?("uno")
-    assert_equal __, hash.values.include?("dos")
-    assert_equal __, hash.values.class
+    assert_equal 2, hash.values.size
+    assert_equal true, hash.values.include?("uno")
+    assert_equal true, hash.values.include?("dos")
+    assert_equal Array, hash.values.class
   end
 
   def test_combining_hashes
     hash = { "jim" => 53, "amy" => 20, "dan" => 23 }
     new_hash = hash.merge({ "jim" => 54, "jenny" => 26 })
 
-    assert_equal __, hash != new_hash
+    assert_equal true, hash != new_hash
+    assert_not_equal hash, new_hash
 
-    expected = { "jim" => __, "amy" => 20, "dan" => 23, "jenny" => __ }
-    assert_equal __, expected == new_hash
+    expected = { "jim" => 54, "amy" => 20, "dan" => 23, "jenny" => 26 }
+    assert_equal true, expected == new_hash
   end
 
   def test_default_value
     hash1 = Hash.new
     hash1[:one] = 1
 
-    assert_equal __, hash1[:one]
-    assert_equal __, hash1[:two]
+    assert_equal 1, hash1[:one]
+    assert_equal nil, hash1[:two]
 
-    hash2 = Hash.new("dos")
+    hash2 = Hash.new("dos") # <-- "dos" is the default value
     hash2[:one] = 1
 
-    assert_equal __, hash2[:one]
-    assert_equal __, hash2[:two]
+    assert_equal 1, hash2[:one]
+    assert_equal "dos", hash2[:two]
   end
 
   def test_default_value_is_the_same_object
@@ -96,11 +123,11 @@ class AboutHashes < Neo::Koan
     hash[:one] << "uno"
     hash[:two] << "dos"
 
-    assert_equal __, hash[:one]
-    assert_equal __, hash[:two]
-    assert_equal __, hash[:three]
+    assert_equal ["uno", "dos"], hash[:one]
+    assert_equal ["uno", "dos"], hash[:two]
+    assert_equal ["uno", "dos"], hash[:three]
 
-    assert_equal __, hash[:one].object_id == hash[:two].object_id
+    assert_equal true, hash[:one].object_id == hash[:two].object_id
   end
 
   def test_default_value_with_block
@@ -109,8 +136,11 @@ class AboutHashes < Neo::Koan
     hash[:one] << "uno"
     hash[:two] << "dos"
 
-    assert_equal __, hash[:one]
-    assert_equal __, hash[:two]
-    assert_equal __, hash[:three]
+    assert_equal ["uno"], hash[:one]
+    assert_equal ["dos"], hash[:two]
+    assert_equal [], hash[:three]
+
+    # See https://stackoverflow.com/questions/46697281/why-does-shoveling-a-string-into-a-hash-cause-this-result
+    # and https://www.ruby-forum.com/topic/4409379
   end
 end
