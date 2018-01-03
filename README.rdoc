@@ -1,9 +1,10 @@
-= Working repo for learning Ruby
+= NOTE: This is a temporary development area for me personally to learn Ruby
 
 This repo has commits in the master branch representing the progress I made
-completing the koans. If you want to fill out the koans yourself, go and check out
-the original repo at https://github.com/neall/ruby_koans
+completing the koans. If you want to figure out the koans by yourself,
+go and check out the original repo at https://github.com/neall/ruby_koans
 
+= Original readme follows...
 = Neo Ruby Koans
 
 The Ruby Koans walk you along the path to enlightenment in order to learn Ruby.
