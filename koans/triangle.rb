@@ -14,6 +14,12 @@
 #   about_triangle_project_2.rb
 #
 def triangle(a, b, c)
+    # Exceptions
+    raise(TriangleError, "all sides must be longer than 0") if (a == 0) || (b == 0) || (c == 0)
+    raise(TriangleError, "all sides must be positive integers") if (a < 0) || (b < 0) || (c < 0)
+    raise(TriangleError, "any two sides of a triangle should add up to more than the third side") if (a + b <= c) || (b + c <= a) || (a + c <= b)
+
+    # Valid logic
     return :equilateral if (a == b) && (b == c)
     return :isosceles   if (a == b) || (b == c) || (a == c)
     return :scalene
